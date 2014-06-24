@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#define WERSJA 1
+#define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
 
 #define SZYFRUJ_DOMYSLNIE szyfrowanie_rekurencyjne(tekst, metoda) 
 #define NIEZASZYFROWANY tekst_przed_zaszyfrowaniem
@@ -13,12 +13,19 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, int metoda_szyfrowania, 
     int dlugosc_szyfrowanego_tekstu = tekst_szyfrowany.size();
     if(miejsce_szyfrowane>=dlugosc_szyfrowanego_tekstu)
         return;
+
     /*------------------Modul szyfrujacy-----------------*/    
-    tekst_szyfrowany[miejsce_szyfrowane] +=metoda_szyfrowania;
+    int znak = tekst_szyfrowany[miejsce_szyfrowane] + metoda_szyfrowania;
+    tekst_szyfrowany[miejsce_szyfrowane]=znak;
+#if (WERSJA == 1)
+	if(znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122)
+		cout<<"POZA ZAKRESEM"<<endl;
+#endif
+	/*---------------------------------------------------*/
 
 #if (WERSJA == 1)
 	cout<<"Pole szyfrowane wynosi: \t"<<miejsce_szyfrowane<<endl;
-	cout<<"Metoda szyfrowania wynosi: \t"<<metoda_szyfrowania<<endl;
+	cout<<"Metoda szyfrowania wynosi: \t"<<metoda_szyfrowania<<endl<<endl;
 #endif
 	
 	if( miejsce_szyfrowane < dlugosc_szyfrowanego_tekstu/2 )
@@ -33,7 +40,8 @@ int main()
 	string tekst, tekst_przed_zaszyfrowaniem;
 	cout<<"Wpisz tekst do zakodowania: ";
 	getline(cin, tekst);
-	if(cin.good())cout<<"Tekst zaladowany pomyslnie!"<<endl;
+	if(cin.good())
+		cout<<"Tekst zaladowany pomyslnie!"<<endl;
 	else 
 	{
 		cout<<"Wystapil blad podczas ladowania tekstu!";
