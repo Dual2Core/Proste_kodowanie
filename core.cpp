@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 #define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
 
@@ -58,6 +59,6 @@ int main()
 	cout<<"Niezaszyfrowany wyraz:\t"<<NIEZASZYFROWANY<<endl;
 	cout<<"Zaszyfrowany wyraz:\t"<<ZASZYFROWANY<<endl;
 	
-	
+	system("pause");
 	
 }
