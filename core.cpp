@@ -8,33 +8,23 @@
 #define ZASZYFROWANY tekst
 using namespace std;
 
-void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, int metoda_szyfrowania=1)
+void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, int metoda_szyfrowania, int miejsce_szyfrowane=0)
 {
-	static int a;
-	tekst_szyfrowany.at(a)+=metoda_szyfrowania;
+    int dlugosc_szyfrowanego_tekstu = tekst_szyfrowany.size();
+    if(miejsce_szyfrowane>=dlugosc_szyfrowanego_tekstu)
+        return;
+    /*------------------Modul szyfrujacy-----------------*/    
+    tekst_szyfrowany[miejsce_szyfrowane] +=metoda_szyfrowania;
 
 #if (WERSJA == 1)
-	cout<<"Pole a wynosi: \t"<<a<<endl;
+	cout<<"Pole szyfrowane wynosi: \t"<<miejsce_szyfrowane<<endl;
 	cout<<"Metoda szyfrowania wynosi: \t"<<metoda_szyfrowania<<endl;
 #endif
-
-	a++;
-
-	if( a < (tekst_szyfrowany.size() / 2) )
-	{
-		metoda_szyfrowania++;
-		szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania);
-	}
-tekst_szyfrowany.at(a)+=metoda_szyfrowania;
-
-#if (WERSJA == 1)
-	cout<<"Pole a wynosi: \t"<<a<<endl;
-	cout<<"Metoda szyfrowania wynosi: \t"<<metoda_szyfrowania<<endl;
-#endif
-
-	a++;
 	
-	return;
+	if( miejsce_szyfrowane < dlugosc_szyfrowanego_tekstu/2 )
+       szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania+1, miejsce_szyfrowane+1);
+    else
+       szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania-1, miejsce_szyfrowane+1);
 }
 
 int main()
