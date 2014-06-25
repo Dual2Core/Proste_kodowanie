@@ -7,6 +7,7 @@
 #define SZYFRUJ_DOMYSLNIE szyfrowanie_rekurencyjne(tekst, metoda) 
 #define NIEZASZYFROWANY tekst_przed_zaszyfrowaniem
 #define ZASZYFROWANY tekst
+#define POZA_ZAKRESEM znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122
 using namespace std;
 
 void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrowania, int miejsce_szyfrowane=0, int przesuniecie=0)
@@ -18,14 +19,47 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 	if(miejsce_szyfrowane>=dlugosc_szyfrowanego_tekstu)
         return;
 
-    /*------------------Modul szyfrujacy-----------------*/    
+    /*--------------------------------Modul szyfrujacy----------------------------------*/
+	
+	    
     int znak = tekst_szyfrowany[miejsce_szyfrowane] + przesuniecie;
-    tekst_szyfrowany[miejsce_szyfrowane]=znak;
+    
+	if(POZA_ZAKRESEM)
+	for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
+	{
+		int odbicie;
+		if(znak>122)
+		{
+			odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
+			znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
+		}
+		else
+		if(znak<48)
+		{
+			odbicie=48-znak; //znak wychodzi poza dolna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
+			znak=48+odbicie; //wartosc jest odbijana wzgledem ostatniej dolnej osi x wykresu
+		}
+		else
+		{
+			if(tendencja%2==0) // jesli tendencja jest parzysta, czyli funkcja jest rosnaca i jest poza zakresem (ale w szerokim zakresie jest)
+			while(POZA_ZAKRESEM)znak--; // wartosc znaku rosnie az do osi¹gniêcia zakresu w jednym z w¹skich zakresów
+			else
+			if(tendencja%2!=0) // jesli tendencja jest nieparzysta, czyli funkcja jest malejaca i jest poza zakresem (ale w szerokim zakresie jest)
+			while(POZA_ZAKRESEM)znak++; // wartosc znaku maleje az do osi¹gniêcia zakresu w jednym z w¹skich zakresów
+		}
+	}
+	
+	
+	tekst_szyfrowany[miejsce_szyfrowane]=znak;
+
 #if (WERSJA == 1)
-	if(znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122)
+	if(POZA_ZAKRESEM)
 		cout<<"POZA ZAKRESEM"<<endl;
+		cout<<"Kod ASCII znaku: "<<znak<<endl;
 #endif
-	/*---------------------------------------------------*/
+	
+	
+	/*----------------------------------------------------------------------------------*/
 
 #if (WERSJA == 1)
 	cout<<"Pole szyfrowane wynosi: \t"<<miejsce_szyfrowane<<endl;
