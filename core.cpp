@@ -78,6 +78,7 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 
 int main()
 {
+	onemoretime:
 	int metoda;
 	string tekst, tekst_przed_zaszyfrowaniem;
 	cout<<"Wpisz tekst do zakodowania: ";
@@ -101,5 +102,7 @@ int main()
 	cout<<"Zaszyfrowany wyraz:\t"<<ZASZYFROWANY<<endl;
 	
 	system("pause");
+	cin.sync();
+	goto onemoretime;
 	
 }
