@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <fstream>
 
 #define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
 
@@ -103,6 +104,14 @@ int main()
 	
 	system("pause");
 	cin.sync();
+	
+	fstream plik("crypted.txt",ios::out);
+	if(plik.is_open())cout<<"Utworzono pomyslnie plik z zaszyfrowanym ciagiem znakow!";
+	else 
+	cout<<"Wystapil blad podczas tworzenia/zapisu do pliku!";
+	plik<<ZASZYFROWANY;
+	cout<<"Zaszyfrowany ciag pomyslnie zapisany do pliku!";
+	
 	goto onemoretime;
 	
 }
