@@ -4,10 +4,9 @@
 #include <fstream>
 
 #define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
+#define DECRYPT_DEFAULT szyfrowanie_rekurencyjne(cryptedstring, method)
 
-#define SZYFRUJ_DOMYSLNIE szyfrowanie_rekurencyjne(tekst, metoda) 
-#define NIEZASZYFROWANY tekst_przed_zaszyfrowaniem
-#define ZASZYFROWANY tekst
+
 #define POZA_ZAKRESEM znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122
 using namespace std;
 
@@ -19,14 +18,18 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 	
 	if(miejsce_szyfrowane>=dlugosc_szyfrowanego_tekstu)
         return;
+        
+    
 
     /*--------------------------------Modul szyfrujacy----------------------------------*/
-	
-	    
-    int znak = tekst_szyfrowany[miejsce_szyfrowane] + przesuniecie;
+#if (WERSJA == 1)
+	int znak_A=tekst_szyfrowany[miejsce_szyfrowane];
+	cout<<"Kod ASCII zaszyfrowanego znaku:\t"<<znak_A<<"\t>>\t"<<tekst_szyfrowany[miejsce_szyfrowane]<<endl;
+#endif
     
-	if(POZA_ZAKRESEM)
-	for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
+	int znak = tekst_szyfrowany[miejsce_szyfrowane] - przesuniecie;
+    
+	for(int tendencja=2;POZA_ZAKRESEM;tendencja++)
 	{
 		int odbicie;
 		if(znak>122)
@@ -54,9 +57,8 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 	tekst_szyfrowany[miejsce_szyfrowane]=znak;
 
 #if (WERSJA == 1)
-	if(POZA_ZAKRESEM)
-		cout<<"POZA ZAKRESEM"<<endl;
-		cout<<"Kod ASCII znaku: "<<znak<<endl;
+	int znak_B=tekst_szyfrowany[miejsce_szyfrowane];
+	cout<<"Kod ASCII odszyfrowanego znaku:\t"<<znak_B<<"\t>>\t"<<tekst_szyfrowany[miejsce_szyfrowane]<<endl;
 #endif
 	
 	
@@ -80,38 +82,25 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 int main()
 {
 	onemoretime:
-	int metoda;
-	string tekst, tekst_przed_zaszyfrowaniem;
-	cout<<"Wpisz tekst do zakodowania: ";
-	getline(cin, tekst);
-	if(cin.good())
-		cout<<"Tekst zaladowany pomyslnie!"<<endl;
-	else 
-	{
-		cout<<"Wystapil blad podczas ladowania tekstu!";
-	}
-	cout<<"Wpisz metode szyfrowania (przesuniecie ASCII): ";
-	cin>>metoda;
+	fstream plik("crypted.txt", ios::in);
+	if(plik.is_open())cout<<"Plik zaladowany pomyslnie!"<<endl;
+	string cryptedstring;
+	getline(plik, cryptedstring);
+	int method;
+	cout<<"Podaj wartosc bedaca podstawa algorytmu deszyfrujacego: ";
+	cin>>method;
+	cout<<endl;
+	string zaszyfrowany=cryptedstring;
 	
-	NIEZASZYFROWANY=tekst;
+	DECRYPT_DEFAULT;
 	
-	cout<<"Rozpoczynam szyfrowanie..."<<endl;
+	cout<<"Zaszyfrowany ciag znakow:\t"<<zaszyfrowany<<endl;
+	cout<<"Odszyfrowany ciag znakow:\t"<<cryptedstring<<endl<<endl;
 	
-	SZYFRUJ_DOMYSLNIE;
+	cout<<"Uzyta metoda deszyfracji: "<<method<<endl<<endl;
 	
-	cout<<"Niezaszyfrowany wyraz:\t"<<NIEZASZYFROWANY<<endl;
-	cout<<"Zaszyfrowany wyraz:\t"<<ZASZYFROWANY<<endl;
-	
-	
-	cin.sync();
-	
-	fstream plik("crypted.txt",ios::out);
-	if(plik.is_open())cout<<"Utworzono pomyslnie plik z zaszyfrowanym ciagiem znakow!"<<endl;
-	else 
-	cout<<"Wystapil blad podczas tworzenia/zapisu do pliku!"<<endl;
-	plik<<ZASZYFROWANY;
-	cout<<"Zaszyfrowany ciag pomyslnie zapisany do pliku \"crypted.txt\""<<endl;
 	system("pause");
-	goto onemoretime;
+	cout<<endl;
 	
+	goto onemoretime;
 }
