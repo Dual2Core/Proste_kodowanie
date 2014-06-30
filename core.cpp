@@ -65,17 +65,21 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 		if(znak>122)
 		{
 			odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
+			//cout<<"Odbicie od osi x w dol wynosi: "<<odbicie<<endl;
 			znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
+			//cout<<"znak wynosi: "<<znak<<endl;
 			if(group_LOW(znak) || znak<58)znak-=13;
 			else
 			if(group_HIGH(znak) || znak<91)znak-=6;
 			else
 			if(znak<48)znak-=13;
+			//cout<<"a teraz znak wynosi: "<<znak<<endl;
 		}
 		else
 		if(znak<48)
 		{
 			odbicie=48-znak; //znak wychodzi poza dolna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
+			//cout<<"Odbicie od osi x w gore wynosi: "<<odbicie<<endl;
 			znak=48+odbicie; //wartosc jest odbijana wzgledem ostatniej dolnej osi x wykresu
 			if(group_HIGH(znak) || znak>96)znak+=13;
 			else
@@ -85,9 +89,19 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 		}
 		else
 		{
-			if(group_HIGH(znak))znak+=6;
+			if(tendencja%2==0)
+			{
+				if(group_HIGH(znak))znak-=6;
+				else
+				if(group_LOW(znak))znak-=7;
+			}
 			else
-			if(group_LOW(znak))znak+=7;
+			if(tendencja%2!=0)
+			{
+				if(group_HIGH(znak))znak+=6;
+				else
+				if(group_LOW(znak))znak+=7;
+			}
 		}
 		
 	}
