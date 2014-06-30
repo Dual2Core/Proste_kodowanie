@@ -11,6 +11,28 @@
 #define POZA_ZAKRESEM znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122
 using namespace std;
 
+bool group_HIGH( char symbol )
+{
+	int zakres[6] = {'`','_','^',']','\\','['};
+	for(int i=0;i<6;i++)
+	{
+		if(symbol==zakres[i])
+			return true;
+	}
+	return false;
+}
+
+bool group_LOW( char symbol )
+{
+	int zakres[7] = {'@','?','>','=','<',';',':'};
+	for(int i=0;i<7;i++)
+	{
+		if(symbol==zakres[i])
+			return true;
+	}
+	return false;
+}
+
 void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrowania, int miejsce_szyfrowane=0, int przesuniecie=0)
 {
     if(miejsce_szyfrowane==0)przesuniecie=metoda_szyfrowania;
@@ -19,11 +41,22 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 	
 	if(miejsce_szyfrowane>=dlugosc_szyfrowanego_tekstu)
         return;
+	
+	
+#if (WERSJA == 1)
+		cout<<"Kod ASCII znaku NIEzaszyfrowanego: "<<static_cast <int> (tekst_szyfrowany[miejsce_szyfrowane])<<endl;
+#endif
 
     /*--------------------------------Modul szyfrujacy----------------------------------*/
 	
 	    
     int znak = tekst_szyfrowany[miejsce_szyfrowane] + przesuniecie;
+    if(tekst_szyfrowany[miejsce_szyfrowane]<58 && znak>64 && znak<91)znak+=7;
+	else
+    if(tekst_szyfrowany[miejsce_szyfrowane]<58 && znak>96)znak+=13;
+    else
+    if(tekst_szyfrowany[miejsce_szyfrowane]>64 && tekst_szyfrowany[miejsce_szyfrowane]<91 && znak>96)znak+=6;
+	    
     
 	if(POZA_ZAKRESEM)
 	for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
@@ -33,30 +66,37 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 		{
 			odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 			znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
+			if(group_LOW(znak) || znak<58)znak-=13;
+			else
+			if(group_HIGH(znak) || znak<91)znak-=6;
+			else
+			if(znak<48)znak-=13;
 		}
 		else
 		if(znak<48)
 		{
 			odbicie=48-znak; //znak wychodzi poza dolna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 			znak=48+odbicie; //wartosc jest odbijana wzgledem ostatniej dolnej osi x wykresu
+			if(group_HIGH(znak) || znak>96)znak+=13;
+			else
+			if(group_LOW(znak) || znak>64)znak+=7;
+			else
+			if(znak>122)znak+=13;
 		}
 		else
 		{
-			if(tendencja%2==0) // jesli tendencja jest parzysta, czyli funkcja jest rosnaca i jest poza zakresem (ale w szerokim zakresie jest)
-			while(POZA_ZAKRESEM)znak--; // wartosc znaku rosnie az do osi¹gniêcia zakresu w jednym z w¹skich zakresów
+			if(group_HIGH(znak))znak+=6;
 			else
-			if(tendencja%2!=0) // jesli tendencja jest nieparzysta, czyli funkcja jest malejaca i jest poza zakresem (ale w szerokim zakresie jest)
-			while(POZA_ZAKRESEM)znak++; // wartosc znaku maleje az do osi¹gniêcia zakresu w jednym z w¹skich zakresów
+			if(group_LOW(znak))znak+=7;
 		}
+		
 	}
 	
 	
 	tekst_szyfrowany[miejsce_szyfrowane]=znak;
 
 #if (WERSJA == 1)
-	if(POZA_ZAKRESEM)
-		cout<<"POZA ZAKRESEM"<<endl;
-		cout<<"Kod ASCII znaku: "<<znak<<endl;
+		cout<<"Kod ASCII znaku zaszyfrowanego: "<<znak<<endl;
 #endif
 	
 	
