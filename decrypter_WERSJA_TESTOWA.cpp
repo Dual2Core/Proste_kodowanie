@@ -11,8 +11,6 @@
 
 using namespace std;
 
-int nr=0;
-
 bool group_HIGH( char symbol )
 {
 	int zakres[6] = {'`','_','^',']','\\','['};
@@ -48,17 +46,14 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 	    else
 	    if(znak_zaszyfrowany>64 && znak_zaszyfrowany<91 && znak>96)znak+=6;
 	    
-	    int tendencja;
-	    
 		if(POZA_ZAKRESEM)
-		for(tendencja=1;POZA_ZAKRESEM;tendencja++)
+		for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
 		{
 			int odbicie;
 			if(znak>122)
 			{
 				odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 				znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
-				if(odbicie<=61)nr=1;
 				if(group_LOW(znak) || znak<58)znak-=13;
 				else
 				if(group_HIGH(znak) || znak<91)znak-=6;
@@ -96,11 +91,9 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			
 		}
 		
-		cout<<tendencja;
 		return znak;
 	
 	}
-	else
 	// przypadek drugi: najpierw w dol
 	if(przypadek==2)
 	{
@@ -114,16 +107,13 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 		if(znak_zaszyfrowany>64 && znak_zaszyfrowany<91 && znak<58)znak-=7;
 	    //cout<<"PRZEEED przed znak wynosi: "<<znak<<endl;
 	    
-	    int tendencja;
-	    
 		if(POZA_ZAKRESEM)
-		for(tendencja=1;POZA_ZAKRESEM;tendencja++)
+		for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
 		{
 			int odbicie;
 			if(znak>122)
 			{
 				odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
-				if(odbicie<=61)nr=2;
 				//cout<<"Odbicie od osi x w dol wynosi: "<<odbicie<<endl;
 				znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
 				//cout<<"znak wynosi: "<<znak<<endl;
@@ -165,83 +155,19 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			
 			
 		}
-		cout<<tendencja;
+		/*else
+		if(znak_zaszyfrowany>96 && znak<91) 
+		{
+			//cout<<"przed znak wynosi: "<<znak<<endl;
+			znak-=6;
+			//cout<<"po znak wynosi: "<<znak<<endl;
+			if(POZA_ZAKRESEM)znak-=7;
+		}
+		*/
 		return znak;
 	}
 	
 }
-
-int szyfrowanie_rekurencyjne(char tekst_szyfrowany, int metoda_szyfrowania)
-{
-    int przesuniecie=metoda_szyfrowania;
-
-    /*--------------------------------Modul szyfrujacy----------------------------------*/
-	
-	    
-    int znak = tekst_szyfrowany + przesuniecie;
-    if(tekst_szyfrowany<58 && znak>64 && znak<91)znak+=7;
-	else
-    if(tekst_szyfrowany<58 && znak>96)znak+=13;
-    else
-    if(tekst_szyfrowany>64 && tekst_szyfrowany<91 && znak>96)znak+=6;
-	    
-	int tendencja;
-    
-	if(POZA_ZAKRESEM)
-	for(tendencja=1;POZA_ZAKRESEM;tendencja++)
-	{
-		int odbicie;
-		if(znak>122)
-		{
-			odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
-			//cout<<"Odbicie od osi x w dol wynosi: "<<odbicie<<endl;
-			znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
-			//cout<<"znak wynosi: "<<znak<<endl;
-			if(group_LOW(znak) || znak<58)znak-=13;
-			else
-			if(group_HIGH(znak) || znak<91)znak-=6;
-			else
-			if(znak<48)znak-=13;
-			//cout<<"a teraz znak wynosi: "<<znak<<endl;
-		}
-		else
-		if(znak<48)
-		{
-			odbicie=48-znak; //znak wychodzi poza dolna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
-			//cout<<"Odbicie od osi x w gore wynosi: "<<odbicie<<endl;
-			znak=48+odbicie; //wartosc jest odbijana wzgledem ostatniej dolnej osi x wykresu
-			if(group_HIGH(znak) || znak>96)znak+=13;
-			else
-			if(group_LOW(znak) || znak>64)znak+=7;
-			else
-			if(znak>122)znak+=13;
-		}
-		else
-		{
-			if(tendencja%2==0)
-			{
-				if(group_HIGH(znak))znak-=6;
-				else
-				if(group_LOW(znak))znak-=7;
-			}
-			else
-			if(tendencja%2!=0)
-			{
-				if(group_HIGH(znak))znak+=6;
-				else
-				if(group_LOW(znak))znak+=7;
-			}
-		}
-		
-	}
-	
-	
-	/*----------------------------------------------------------------------------------*/
-
-	return znak;
-	
-}
-
 
 void deszyfrowanie( string &encrypted, const int decrypt_method )
 {
@@ -252,29 +178,21 @@ void deszyfrowanie( string &encrypted, const int decrypt_method )
 		else
 		if( i	>	encrypted.size() / 2 ) movement-=decrypt_method;
 		
-		int propozycja1,propozycja2,odszyfrowany;
 		
 		cout<<endl<<"Kod ASCII znaku zaszyfrowanego: "<<static_cast <int> (encrypted[i])<<endl;
-		propozycja1=static_cast <int> (simulation_tendency(encrypted[i], movement, 1));
-		propozycja2=static_cast <int> (simulation_tendency(encrypted[i], movement, 2));
-		
-		cout<<"PROPOZYCJA 1: kod ASCII znaku odszyfrowanego: "<<propozycja1<<endl;
-		cout<<"PROPOZYCJA 2: kod ASCII znaku odszyfrowanego: "<<propozycja2<<endl;
+		cout<<"PROPOZYCJA 1: kod ASCII znaku odszyfrowanego: "<<static_cast <int> (simulation_tendency(encrypted[i], movement, 1))<<endl;
+		cout<<"PROPOZYCJA 2: kod ASCII znaku odszyfrowanego: "<<static_cast <int> (simulation_tendency(encrypted[i], movement, 2))<<endl;
 		
 		
-		
-		if(nr==1)
-		{
-			cout<<"Znak znaleziony: "<<static_cast <char> (propozycja1)<<endl;
-			encrypted[i]=propozycja1;
-		}
+		/*
+		if(encrypted[i]<91 && encrypted[i]>64)encrypted[i]-=6;
 		else
-		if(nr==2)
-		{
-			cout<<"Znak znaleziony: "<<static_cast <char> (propozycja2)<<endl;
-			encrypted[i]=propozycja2;
-		}
-		nr=0;
+		if(encrypted[i]<65)encrypted[i]-=13;
+		else
+		if(group_HIGH(encrypted[i]))encrypted[i]-=6;
+		else
+		if(group_LOW(encrypted[i]))encrypted[i]-=13;
+		*/
 	}
 }
 

@@ -57,9 +57,10 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
     else
     if(tekst_szyfrowany[miejsce_szyfrowane]>64 && tekst_szyfrowany[miejsce_szyfrowane]<91 && znak>96)znak+=6;
 	    
+	int tendencja;
     
 	if(POZA_ZAKRESEM)
-	for(int tendencja=1;POZA_ZAKRESEM;tendencja++)
+	for(tendencja=1;POZA_ZAKRESEM;tendencja++)
 	{
 		int odbicie;
 		if(znak>122)
@@ -118,7 +119,8 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 
 #if (WERSJA == 1)
 	cout<<"Pole szyfrowane wynosi: \t"<<miejsce_szyfrowane<<endl;
-	cout<<"Przesuniecie wynosi: \t"<<przesuniecie<<endl<<endl;
+	cout<<"Przesuniecie wynosi: \t"<<przesuniecie<<endl;
+	cout<<"Tendencja wynosi: \t"<<tendencja<<endl<<endl;
 #endif
 	
 	if( miejsce_szyfrowane < dlugosc_szyfrowanego_tekstu/2 )
