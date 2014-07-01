@@ -5,7 +5,8 @@
 
 #define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
 
-#define SZYFRUJ_DOMYSLNIE szyfrowanie_rekurencyjne(tekst, metoda) 
+#define SZYFRUJ_DOMYSLNIE szyfrowanie_rekurencyjne(tekst, metoda)
+#define OBLICZ_KIERUNKI szyfrowanie_rekurencyjne(kierunki, metoda, 0, 0, 1) 
 #define NIEZASZYFROWANY tekst_przed_zaszyfrowaniem
 #define ZASZYFROWANY tekst
 #define POZA_ZAKRESEM znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122
@@ -33,7 +34,7 @@ bool group_LOW( char symbol )
 	return false;
 }
 
-void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrowania, int miejsce_szyfrowane=0, int przesuniecie=0)
+void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrowania, int miejsce_szyfrowane=0, int przesuniecie=0, int tryb=0)
 {
     if(miejsce_szyfrowane==0)przesuniecie=metoda_szyfrowania;
 	
@@ -57,7 +58,7 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
     else
     if(tekst_szyfrowany[miejsce_szyfrowane]>64 && tekst_szyfrowany[miejsce_szyfrowane]<91 && znak>96)znak+=6;
 	    
-	int tendencja;
+	int tendencja,kierunek=48;
     
 	if(POZA_ZAKRESEM)
 	for(tendencja=1;POZA_ZAKRESEM;tendencja++)
@@ -68,6 +69,7 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 			odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 			//cout<<"Odbicie od osi x w dol wynosi: "<<odbicie<<endl;
 			znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
+			if(odbicie<=61)kierunek=49;
 			//cout<<"znak wynosi: "<<znak<<endl;
 			if(group_LOW(znak) || znak<58)znak-=13;
 			else
@@ -82,6 +84,7 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 			odbicie=48-znak; //znak wychodzi poza dolna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 			//cout<<"Odbicie od osi x w gore wynosi: "<<odbicie<<endl;
 			znak=48+odbicie; //wartosc jest odbijana wzgledem ostatniej dolnej osi x wykresu
+			if(odbicie<=61)kierunek=48;
 			if(group_HIGH(znak) || znak>96)znak+=13;
 			else
 			if(group_LOW(znak) || znak>64)znak+=7;
@@ -107,9 +110,12 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 		
 	}
 	
-	
+	if(tryb==0)
 	tekst_szyfrowany[miejsce_szyfrowane]=znak;
-
+	else
+	if(tryb==1)
+	tekst_szyfrowany[miejsce_szyfrowane]=kierunek;
+	
 #if (WERSJA == 1)
 		cout<<"Kod ASCII znaku zaszyfrowanego: "<<znak<<endl;
 #endif
@@ -125,11 +131,11 @@ void szyfrowanie_rekurencyjne(string &tekst_szyfrowany, const int metoda_szyfrow
 	
 	if( miejsce_szyfrowane < dlugosc_szyfrowanego_tekstu/2 )
     {
-    	szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania, miejsce_szyfrowane+1, przesuniecie+metoda_szyfrowania);
+    	szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania, miejsce_szyfrowane+1, przesuniecie+metoda_szyfrowania, tryb);
 	}
 	else
 	{
-	   szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania, miejsce_szyfrowane+1, przesuniecie-metoda_szyfrowania);
+	   szyfrowanie_rekurencyjne(tekst_szyfrowany, metoda_szyfrowania, miejsce_szyfrowane+1, przesuniecie-metoda_szyfrowania, tryb);
 	}
 }
 
@@ -150,14 +156,17 @@ int main()
 	cin>>metoda;
 	
 	NIEZASZYFROWANY=tekst;
+	string kierunki=tekst;
 	
 	cout<<"Rozpoczynam szyfrowanie..."<<endl;
 	
 	SZYFRUJ_DOMYSLNIE;
+	OBLICZ_KIERUNKI;
+	
 	
 	cout<<"Niezaszyfrowany wyraz:\t"<<NIEZASZYFROWANY<<endl;
 	cout<<"Zaszyfrowany wyraz:\t"<<ZASZYFROWANY<<endl;
-	
+	cout<<"Kierunki do zaszyfrowanego:\t"<<kierunki<<endl;
 	
 	cin.sync();
 	
@@ -165,7 +174,8 @@ int main()
 	if(plik.is_open())cout<<"Utworzono pomyslnie plik z zaszyfrowanym ciagiem znakow!"<<endl;
 	else 
 	cout<<"Wystapil blad podczas tworzenia/zapisu do pliku!"<<endl;
-	plik<<ZASZYFROWANY;
+	plik<<ZASZYFROWANY<<endl;
+	plik<<kierunki;
 	cout<<"Zaszyfrowany ciag pomyslnie zapisany do pliku \"crypted.txt\""<<endl;
 	system("pause");
 	goto onemoretime;
