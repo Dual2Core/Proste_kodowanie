@@ -5,13 +5,11 @@
 #include <cmath>
 
 #define WERSJA 1  // 1 dla wersji testowych, 2 dla wersji oficjalnej
-#define DECRYPT_DEFAULT deszyfrowanie(cryptedstring, method)
+#define DECRYPT_DEFAULT deszyfrowanie(cryptedstring, method, kierunki)
 
 #define POZA_ZAKRESEM znak<48 || znak>57 && znak<65 || znak>90 && znak<97 || znak>122
 
 using namespace std;
-
-int nr=0;
 
 bool group_HIGH( char symbol )
 {
@@ -35,9 +33,9 @@ bool group_LOW( char symbol )
 	return false;
 }
 
-char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypadek ) // zwraca proponowany znak
+char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int kierunek ) // zwraca proponowany znak
 {
-	if(przypadek==1)
+	if(kierunek==49)
 	{
 		
 		// przypadek pierwszy: najpierw do gory
@@ -58,7 +56,6 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			{
 				odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
 				znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
-				if(odbicie<=61)nr=1;
 				if(group_LOW(znak) || znak<58)znak-=13;
 				else
 				if(group_HIGH(znak) || znak<91)znak-=6;
@@ -95,14 +92,12 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			
 			
 		}
-		
-		cout<<tendencja;
 		return znak;
 	
 	}
 	else
 	// przypadek drugi: najpierw w dol
-	if(przypadek==2)
+	if(kierunek==48)
 	{
 		//cout<<"TYLE WYNOSI ZNAK SZYFROWANY: "<<znak_szyfrowany<<endl;
 		//cout<<"TYLE WYNOSI PRZESUNIECIE: "<<przesuniecie<<endl;
@@ -123,7 +118,6 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			if(znak>122)
 			{
 				odbicie=znak-122; //znak wychodzi poza gorna granice zakresu, wartosc ekstra jest "obcinana" jako odbicie
-				if(odbicie<=61)nr=2;
 				//cout<<"Odbicie od osi x w dol wynosi: "<<odbicie<<endl;
 				znak=122-odbicie; //wartosc jest odbijana wzgledem ostatniej gornej osi x wykresu
 				//cout<<"znak wynosi: "<<znak<<endl;
@@ -165,7 +159,6 @@ char simulation_tendency( char znak_zaszyfrowany, int przesuniecie, int przypade
 			
 			
 		}
-		cout<<tendencja;
 		return znak;
 	}
 	
@@ -243,7 +236,7 @@ int szyfrowanie_rekurencyjne(char tekst_szyfrowany, int metoda_szyfrowania)
 }
 
 
-void deszyfrowanie( string &encrypted, const int decrypt_method )
+void deszyfrowanie( string &encrypted, const int decrypt_method, string directions )
 {
 	int movement=decrypt_method;
 	for(int i=0;i<encrypted.size();i++)
@@ -252,6 +245,12 @@ void deszyfrowanie( string &encrypted, const int decrypt_method )
 		else
 		if( i	>	encrypted.size() / 2 ) movement-=decrypt_method;
 		
+		int direction=static_cast <int> (directions[i]);
+		int odszyfrowany=static_cast <int> (simulation_tendency(encrypted[i], movement, direction));
+		cout<<endl<<"kierunek: "<<direction<<endl;
+		cout<<"odszyfrowany: "<<odszyfrowany<<endl;
+		
+		/*
 		int propozycja1,propozycja2,odszyfrowany;
 		
 		cout<<endl<<"Kod ASCII znaku zaszyfrowanego: "<<static_cast <int> (encrypted[i])<<endl;
@@ -260,9 +259,13 @@ void deszyfrowanie( string &encrypted, const int decrypt_method )
 		
 		cout<<"PROPOZYCJA 1: kod ASCII znaku odszyfrowanego: "<<propozycja1<<endl;
 		cout<<"PROPOZYCJA 2: kod ASCII znaku odszyfrowanego: "<<propozycja2<<endl;
+		*/
+		cout<<endl<<"Kod ASCII znaku zaszyfrowanego:\t"<<static_cast <int> (encrypted[i])<<endl;
+		cout<<"Kod ASCII znaku odszyfrowanego:\t"<<odszyfrowany<<endl;
 		
+		encrypted[i]=odszyfrowany;
 		
-		
+		/*
 		if(nr==1)
 		{
 			cout<<"Znak znaleziony: "<<static_cast <char> (propozycja1)<<endl;
@@ -274,7 +277,7 @@ void deszyfrowanie( string &encrypted, const int decrypt_method )
 			cout<<"Znak znaleziony: "<<static_cast <char> (propozycja2)<<endl;
 			encrypted[i]=propozycja2;
 		}
-		nr=0;
+		nr=0;*/
 	}
 }
 
@@ -284,7 +287,9 @@ int main()
 	fstream plik("crypted.txt", ios::in);
 	if(plik.is_open())cout<<"Plik zaladowany pomyslnie!"<<endl;
 	string cryptedstring;
+	string kierunki;
 	getline(plik, cryptedstring);
+	getline(plik, kierunki);
 	int method;
 	cout<<"Podaj wartosc bedaca podstawa algorytmu deszyfrujacego: ";
 	cin>>method;
